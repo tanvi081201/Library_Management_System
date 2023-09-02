@@ -1,6 +1,16 @@
 <?php
-	require("functions.php");
 	session_start();
+	#fetch data from database
+	$connection = mysqli_connect("localhost","root","");
+	$db = mysqli_select_db($connection,"lms");
+	$author_id = "";
+	$author_name = "";
+	$query = "select * from authors where author_id = $_GET[aid]";
+	$query_run = mysqli_query($connection,$query);
+	while ($row = mysqli_fetch_assoc($query_run)){
+		$author_name = $row['author_name'];
+		$author_id = $row['author_id'];
+	}
 ?>
 <!DOCTYPE html>
 <html>
@@ -23,9 +33,9 @@
 		      <li class="nav-item dropdown">
 	        	<a class="nav-link dropdown-toggle" data-toggle="dropdown">My Profile </a>
 	        	<div class="dropdown-menu">
-	        		<a class="dropdown-item" href="view_profile.php">View Profile</a>
+	        		<a class="dropdown-item" href="">View Profile</a>
 	        		<div class="dropdown-divider"></div>
-	        		<a class="dropdown-item" href="edit_profile.php">Edit Profile</a>
+	        		<a class="dropdown-item" href="#">Edit Profile</a>
 	        		<div class="dropdown-divider"></div>
 	        		<a class="dropdown-item" href="change_password.php">Change Password</a>
 	        	</div>
@@ -37,23 +47,28 @@
 		</div>
 	</nav><br>
 	<span><marquee>This is library mangement system. Library opens at 8:00 AM and close at 8:00 PM</marquee></span><br><br>
-		<center><h4>Change Admin Password</h4><br></center>
+		<center><h4>Edit Book</h4><br></center>
 		<div class="row">
 			<div class="col-md-4"></div>
 			<div class="col-md-4">
-				<form action="update_password.php" method="post">
+				<form action="" method="post">
 					<div class="form-group">
-						<label for="password">Enter Password:</label>
-						<input type="password" class="form-control" name="old_password">
+						<label for="name">Author Name:</label>
+						<input type="text" class="form-control" name="author_name" value="<?php echo $author_name; ?>" required>
 					</div>
-					<div class="form-group">
-						<label for="New Password">Enter New Password:</label>
-						<input type="password" name="new_password" class="form-control">
-					</div>
-					<button type="submit" name="update" class="btn btn-primary">Update Password</button>
+					<button type="submit" name="update_author" class="btn btn-primary">Update Author</button>
 				</form>
 			</div>
 			<div class="col-md-4"></div>
 		</div>
 </body>
 </html>
+<?php
+	if(isset($_POST['update_author'])){
+		$connection = mysqli_connect("localhost","root","");
+		$db = mysqli_select_db($connection,"lms");
+		$query = "update authors set author_name = '$_POST[author_name]' where author_id = $_GET[aid]";
+		$query_run = mysqli_query($connection,$query);
+		header("location:manage_author.php");
+	}
+?>
